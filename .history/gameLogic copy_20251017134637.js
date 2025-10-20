@@ -6,6 +6,8 @@ En el nuevo diseño:
 gameLogic.js se convierte en un módulo puro de funciones → recibe un estado y devuelve un estado nuevo.
 index.js (o el frontend, o un servicio aparte) se encarga del ciclo de actualización (loop) y de emitir los datos al cliente.
 */
+
+let timer = 0;
 const BAR_WIDTH = 10;
 const BAR_HEIGHT = 100;
 const BALL_SIZE = 10;

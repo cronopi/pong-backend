@@ -6,6 +6,8 @@ En el nuevo diseño:
 gameLogic.js se convierte en un módulo puro de funciones → recibe un estado y devuelve un estado nuevo.
 index.js (o el frontend, o un servicio aparte) se encarga del ciclo de actualización (loop) y de emitir los datos al cliente.
 */
+
+let timer = 0;
 const BAR_WIDTH = 10;
 const BAR_HEIGHT = 100;
 const BALL_SIZE = 10;
@@ -21,9 +23,8 @@ function createInitialState() {
 		ball_size: BALL_SIZE,
 		canvas_width: CANVAS_WIDTH,
 		canvas_height: CANVAS_HEIGHT,
-		// apartir de ahora estas linieas deben inicializarse aqui
-		// y no como variables globales porque el estado se maneja
-		// de forma externa y se pasa como parámetro a las funciones.
+		// apartir de ahora estas linieas deben inicializarse aqui y no como variables globales
+		// porque el estado se maneja de forma externa y se pasa como parámetro a las funciones.
 		left_bar_x: MARGIN_TO_BAR,
 		right_bar_x: CANVAS_WIDTH - MARGIN_TO_BAR - BAR_WIDTH,
 		left_bar_y: (CANVAS_HEIGHT / 2) - (BAR_HEIGHT / 2),
@@ -45,23 +46,20 @@ function createInitialState() {
 
 }
 
-function updateBall(state) {
+function updateBall() {
 
 	let { ball_x, ball_y, ball_dx, ball_dy, left_bar_x, left_bar_y,
-		right_bar_x, right_bar_y, ball_size, bar_height, bar_width,
-		canvas_width, canvas_height, game } = state;
+		right_bar_x, right_bar_y, ball_size, bar_height, bar_width, canvas_width, canvas_height, game } = state;
 
 	ball_x += ball_dx;
 	ball_y += ball_dy;
 
 	// termina el juego si choca con los bordes izquierdo o derecho
-	if (ball_x <= 0 || ball_x + ball_size >= canvas_width)
-		game = false;
+	if (ball_x <= 0 || ball_x + ball_size >= canvas_width) game = false;
 
 	//rebote con borde superior o inferior
 	if (ball_y <= 0 || ball_y + ball_size >= canvas_height)
 		ball_dy = -ball_dy;
-
 	/*
 	  if (left_bar_y < 0) {
 		left_bar_y = 0;
@@ -78,6 +76,7 @@ function updateBall(state) {
 	}
 	*/
 
+
 	//rebote con barra izquierda
 	if (ball_x <= left_bar_x + bar_width &&
 		ball_y + ball_size >= left_bar_y &&
@@ -90,21 +89,24 @@ function updateBall(state) {
 		ball_y <= right_bar_y + bar_height) {
 		ball_dx = -Math.abs(ball_dx); // Rebota a la izquierda y pintamos la barra
 	}
+
 	return { ...state, ball_x, ball_y, ball_dx, ball_dy, game };
 }
 
-function movePlayer(state, player, key) {
-	let { left_bar_y, right_bar_y, bar_height, canvas_height } = state;
-
+function listenPlayer(player, key) {
 	if (player === 1) {
-		if (key === "w") left_bar_y = Math.max(0, left_bar_y - 10);
-		if (key === "s") left_bar_y = Math.min(canvas_height - bar_height, left_bar_y + 10);
+		if (key === "w") left_bar_y -= 10;
+		if (key === "s") left_bar_y += 10;
 	} else {
-		if (key === "o") right_bar_y = Math.max(0, right_bar_y - 10);
-		if (key === "l") right_bar_y = Math.min(canvas_height - bar_height, right_bar_y + 10);
+		if (key === "o") right_bar_y -= 10;
+		if (key === "l") right_bar_y += 10;
 	}
-
-	return { ...state, left_bar_y, right_bar_y };
 }
 
-module.exports = { createInitialState, updateBall, movePlayer };
+function updateTimer() {
+	timer++;
+	setTimeout(updateTimer, 1000);
+}
+
+updateState();
+updateTimer();
