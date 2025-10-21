@@ -2,7 +2,6 @@ const fastify = require('fastify')();
 const { createInitialState, updateBall, movePlayer } = require('./gameLogic');
 
 (async () => {
-	// 🔹 Habilitar CORS para permitir peticiones desde el navegador
 	await fastify.register(require('@fastify/cors'), { origin: true });
 
 	// 🔹 Estado inicial del juego
