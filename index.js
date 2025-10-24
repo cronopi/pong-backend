@@ -4,33 +4,23 @@ const { createInitialState, updateBall, movePlayer } = require('./gameLogic');
 (async () => {
 	await fastify.register(require('@fastify/cors'), { origin: true });
 
-	// 🔹 Estado inicial del juego
-	let gameState = createInitialState();
-
 	// 🔹 Endpoint raíz
 	fastify.get('/', async () => ({ message: 'Microservicio Pong activo' }));
 
-	// 🔹 Devuelve el estado actual
-	fastify.get('/state', async () => gameState);
+	// Inicia el juego
+	fastify.post('/init', async () => initGame());
 
-	// 🔹 Actualiza la pelota
-	fastify.post('/update', async () => {
-		gameState = updateBall(gameState);
-		return gameState;
-	});
+	// 🔹 Devuelve el estado actual
+	fastify.get('/state', async () => getState());
 
 	// 🔹 Mueve un jugador
 	fastify.post('/move', async (req) => {
 		const { player, key } = req.body;
-		gameState = movePlayer(gameState, player, key);
-		return gameState;
+		movePlayer(player, key);
 	});
 
 	// 🔹 Reinicia el juego
-	fastify.post('/reset', async () => {
-		gameState = createInitialState();
-		return gameState;
-	});
+	fastify.post('/reset', async () => initGame());
 
 	// 🔹 Inicia el servidor
 	try {
